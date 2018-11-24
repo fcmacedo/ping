@@ -1,10 +1,14 @@
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+import util.LogUtil;
 
 public class App {
 
 	//Host destino
-	private static final String HOST = "www.uol.com.br";
+	private static String HOST[] = new String[10];
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -12,15 +16,20 @@ public class App {
 		InputStream stream = null;
 		byte[] content = null;
 		float tempo = 0f;
+		int i=0;
 		
+		HOST[0] = "www.uol.com.br";
+		HOST[1] = "www.facebook.com.br";
+		HOST[2] = "www.terra.com.br";
+		HOST[3] = "nubank.com.br";
 		
+	    LogUtil log = new LogUtil();
 		
 		try {
-
 			while(true) {
 
 				//executa um comando do console (no caso o Ping)
-				process = Runtime.getRuntime().exec("ping " + HOST);
+				process = Runtime.getRuntime().exec("ping " + HOST[i++]);
 				process.waitFor();
 
 				//Recupera o resultado do ping no console (criam um stream de dados)
@@ -28,7 +37,7 @@ public class App {
 				content = new byte[stream.available()];
 				stream.read(content);
 
-				//Converte para String e j· quebra o resultado para isolar o tempo do ping
+				//Converte para String e j√° quebra o resultado para isolar o tempo do ping
 				String part[] = (new String(content)).split("tempo=");
 
 				//Se houve resultado mostra SOMENTE o tempo (esse deve se gravado no banco ou arquivo TXT)
@@ -38,11 +47,18 @@ public class App {
 					tempo = Float.parseFloat(part[1].substring(0, part[1].indexOf("ms")));
 					
 										System.out.println(tempo);
+										
+										LocalDateTime timePoint = LocalDateTime.now(); 
+										
+										log.saveLog(HOST[i], timePoint, tempo);
+										
 
 				}else {
-					System.out.println("Host n„o alcanÁado...");
+					System.out.println("Host n√£o alcan√ßado...");
 				}
 
+			    //Thread.sleep(1000);
+				if(i==4) i = 0;
 			}
 
 
@@ -50,7 +66,9 @@ public class App {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}	}
+		}	
+		
+	}
 
 
 
